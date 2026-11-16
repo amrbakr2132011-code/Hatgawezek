@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إلى روضة.. نصيبي وقدري ❤️</title>
+    <!-- استيراد Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- استيراد خطوط عربية أنيقة: Cairo و Amiri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- مكتبة Tone.js لإضافة مؤثرات صوتية ناعمة دون الحاجة لملفات خارجية -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        amiri: ['Amiri', 'serif'],
+                    },
+                    colors: {
+                        night: '#0d0614',
+                        plum: '#1f0b24',
+                        roseSoft: '#ff758f',
+                        roseDeep: '#c9184a',
+                        goldWarm: '#ffd166',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* تنسيقات مخصصة للخلفية والأنيميشن الرومانسي */
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at top center, #2b0f2a 0%, #120618 55%, #07030a 100%);
+            color: #fff5f7;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* تأثير النجوم المتلألئة */
+        .star {
+            position: fixed;
+            background-color: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: twinkle var(--duration) ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.3); box-shadow: 0 0 8px #ffd166; }
+        }
+
+        /* تأثير القلوب الطافية في الخلفية */
+        .floating-heart {
+            position: fixed;
+            bottom: -50px;
+            pointer-events: none;
+            animation: floatUp var(--float-duration) linear forwards;
+            z-index: 1;
+            opacity: 0.6;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(0.8);
+                opacity: 0;
+            }
+            15% { opacity: 0.7; }
+            85% { opacity: 0.7; }
+            100% {
+                transform: translateY(-110vh) rotate(360deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* تأثير الزجاج المتجمد (Glassmorphism) */
+        .glass-card {
+            background: rgba(35, 14, 38, 0.65);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 117, 143, 0.25);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 209, 102, 0.08);
+        }
+
+        /* تأثير البطاقات القابلة للقلب (3D Flip Cards) */
+        .flip-card {
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, rgba(201, 24, 74, 0.85), rgba(89, 13, 34, 0.95));
+            border: 1px solid #ffd166;
+        }
+
+        /* نبض القلب */
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            14% { transform: scale(1.15); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.15); }
+            70% { transform: scale(1); }
+        }
+
+        .animate-heartbeat {
+            animation: heartBeat 2s infinite;
+        }
+
+        /* إخفاء شريط التمرير مع الحفاظ على التمرير */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d0614;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c9184a;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="relative selection:bg-roseDeep selection:text-white">
+
+    <!-- حاوية النجوم والقلوب في الخلفية -->
+    <div id="stars-container" class="fixed inset-0 pointer-events-none z-0"></div>
+    <div id="hearts-container" class="fixed inset-0 pointer-events-none z-0"></div>
+    <!-- كانفاس للاحتفال عند الموافقة -->
+    <canvas id="celebration-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+    <!-- زر التحكم بالصوت الهادئ -->
+    <button id="sound-toggle" aria-label="تشغيل أو إيقاف النغمات" class="fixed top-4 left-4 z-40 glass-card p-3 rounded-full text-goldWarm hover:scale-110 transition-transform shadow-lg">
+        <span id="sound-icon" class="text-xl">🔇</span>
+    </button>
+
+    <!-- ==================== 1. الشاشة الترحيبية ==================== -->
+    <section id="welcome-screen" class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-10 text-center transition-all duration-700">
+        <div class="glass-card max-w-lg w-full p-8 sm:p-12 rounded-3xl relative overflow-hidden">
+            <!-- لمعة ذهبية علوية -->
+            <div class="absolute -top-20 -right-20 w-40 h-40 bg-roseSoft/20 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-goldWarm/20 rounded-full blur-3xl"></div>
+
+            <!-- أيقونة قلب نابض -->
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-tr from-roseDeep to-roseSoft shadow-lg shadow-roseDeep/40 mb-6 animate-heartbeat">
+                <svg class="w-10 h-10 text-white fill-current" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            </div>
+
+            <p class="text-goldWarm text-sm sm:text-base font-semibold tracking-wider mb-2">رسالة خاصة جداً.. من قلبي لقلبك</p>
+            
+            <h1 class="font-amiri text-4xl sm:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-roseSoft to-goldWarm mb-4 leading-tight">
+                إلى روضة ✨
+            </h1>
+
+            <p class="text-rose-100/90 text-base sm:text-lg leading-relaxed mb-8">
+                في وسط زحمة الدنيا، فيه حقيقة واحدة عمري ما شكيت فيها لحظة.. الكلام ده مكتوب ليكي إنتي وبس.
+            </p>
+
+            <!-- زر فتح الرسالة -->
+            <button id="open-letter-btn" class="group relative inline-flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-4 text-lg font-bold text-white bg-gradient-to-r from-roseDeep via-rose-600 to-roseDeep rounded-2xl shadow-xl shadow-roseDeep/40 hover:shadow-roseSoft/50 hover:scale-105 active:scale-95 transition-all duration-300">
+                <span>افتحي قلبي يا روضة</span>
+                <span class="text-2xl group-hover:rotate-12 transition-transform">💌</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- ==================== 2. المحتوى الرئيسي (يظهر بعد الفتح) ==================== -->
+    <main id="main-content" class="hidden relative z-10 max-w-3xl mx-auto px-4 py-12 space-y-12 opacity-0 transition-opacity duration-1000">
+        
+        <!-- القسم الأول: الرسالة الأساسية والوعد بالزواج -->
+        <article class="glass-card p-6 sm:p-10 rounded-3xl relative border-t-2 border-goldWarm/50">
+            <div class="flex items-center justify-between border-b border-roseSoft/20 pb-4 mb-6">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">🌹</span>
+                    <h2 class="font-amiri text-2xl sm:text-3xl font-bold text-goldWarm">يا روضة عمري..</h2>
+                </div>
+                <span class="text-xs sm:text-sm text-roseSoft bg-roseDeep/30 px-3 py-1 rounded-full border border-roseSoft/30">وعد راجل ❤️</span>
+            </div>
+
+            <div class="space-y-5 text-rose-50/95 text-base sm:text-xl leading-loose font-normal">
+                <p>
+                    عايزك تحطي الكلمتين دول حلقة في ودنك وتطمني قلبك عالآخر.. <span class="text-goldWarm font-bold">مهما حصل، ومهما الدنيا لفت أو وقفت قدامنا ظروف أو صعوبات، إنتي هتفضلي من نصيبي وهتجوزك يا روضة.</span>
+                </p>
+                <p>
+                    إنتي مش مجرد حد عادي دخل حياتي، إنتي الروضة اللي نورت أيامي، وإنتي الحلم اللي بسعى ليه بكل طاقتي. كل خطوة بخطيها في حياتي النهاردة، وكل تعب بتعبه، هدفه الوحيد هو اليوم اللي يجمعنا بيت واحد على سنة الله ورسوله.
+                </p>
+                <div class="bg-gradient-to-r from-roseDeep/30 via-plum/60 to-roseDeep/30 border-r-4 border-goldWarm p-5 rounded-2xl my-6">
+                    <p class="font-amiri text-xl sm:text-2xl text-goldWarm font-bold text-center leading-relaxed">
+                        "لو كل الدنيا وقفت قصادي، هختارك إنتي.. ولو العمر اتعاد ألف مرة، مش هختار شريكة لحياتي غيرك يا روضة."
+                    </p>
+                </div>
+                <p>
+                    مفيش حاجة في الدنيا تقدر تغير مكانتك في قلبي، ولا أي مسافة أو وقت يقدروا يقللوا من حبي ليكي. خليكي واثقة في ربنا، وواثقة فيا، إن اسمك هيتكتب جنب اسمي قريب أوي.
+                </p>
+            </div>
+        </article>
+
+        <!-- القسم الثاني: بطاقات تفاعلية (وعود وأسباب حبي ليكي) -->
+        <section class="space-y-6">
+            <div class="text-center space-y-2">
+                <h3 class="font-amiri text-3xl sm:text-4xl font-bold text-goldWarm">4 وعود من قلبي ليكي ✨</h3>
+                <p class="text-rose-200/80 text-sm sm:text-base">اضغطي على كل بطاقة عشان تشوفي اللي جواها</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <!-- بطاقة 1 -->
+                <div class="flip-card h-48" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front glass-card">
+                            <span class="text-4xl mb-3">💍</span>
+                            <h4 class="font-bold text-lg text-goldWarm">الوعد الأول</h4>
+                            <p class="text-xs text-roseSoft mt-1">اضغطي للفتح</p>
+                        </div>
+                        <div class="flip-card-back shadow-xl">
+                            <p class="text-white font-semibold text-base sm:text-lg leading-relaxed">
+                                أوعدك إني هحارب الدنيا كلها عشان أجي أخبط على باب بيتكم وأطلب إيدك قدام الكل.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- بطاقة 2 -->
+                <div class="flip-card h-48" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front glass-card">
+                            <span class="text-4xl mb-3">🛡️</span>
+                            <h4 class="font-bold text-lg text-goldWarm">الوعد الثاني</h4>
+                            <p class="text-xs text-roseSoft mt-1">اضغطي للفتح</p>
+                        </div>
+                        <div class="flip-card-back shadow-xl">
+                            <p class="text-white font-semibold text-base sm:text-lg leading-relaxed">
+                                أوعدك إني أكون دايماً ضهرك وسندك وأمانك، وعمري ما أسمح لدمعة تنزل من عينك بسببي.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- بطاقة 3 -->
+                <div class="flip-card h-48" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front glass-card">
+                            <span class="text-4xl mb-3">🏡</span>
+                            <h4 class="font-bold text-lg text-goldWarm">الوعد الثالث</h4>
+                            <p class="text-xs text-roseSoft mt-1">اضغطي للفتح</p>
+                        </div>
+                        <div class="flip-card-back shadow-xl">
+                            <p class="text-white font-semibold text-base sm:text-lg leading-relaxed">
+                                أوعدك نعمل بيت مليان دفا وضحك وحب، وتكوني إنتي الملكة المتوجة جواه طول العمر.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- بطاقة 4 -->
+                <div class="flip-card h-48" onclick="flipCard(this)">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front glass-card">
+                            <span class="text-4xl mb-3">♾️</span>
+                            <h4 class="font-bold text-lg text-goldWarm">الوعد الرابع</h4>
+                            <p class="text-xs text-roseSoft mt-1">اضغطي للفتح</p>
+                        </div>
+                        <div class="flip-card-back shadow-xl">
+                            <p class="text-white font-semibold text-base sm:text-lg leading-relaxed">
+                                أوعدك إني هفضل أحبك النهاردة وبكرة وبعد 50 سنة بنفس اللهفة وأكتر يا روضة.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- القسم الثالث: السؤال التفاعلي المرح -->
+        <section id="question-box" class="glass-card p-8 sm:p-10 rounded-3xl text-center space-y-6 relative overflow-hidden border border-goldWarm/40">
+            <div class="text-4xl">🥰</div>
+            <h3 class="font-amiri text-3xl sm:text-4xl font-bold text-white">
+                ها يا روضة.. موافقة نكمل المشوار سوا لحد ما نتجوز؟
+            </h3>
+            <p class="text-rose-200/80 text-sm sm:text-base">
+                (خدي بالك.. مفيش اختيار تاني غير إنك توافقي 😉)
+            </p>
+
+            <!-- حاوية الأزرار -->
+            <div id="buttons-area" class="relative min-h-[120px] flex flex-wrap items-center justify-center gap-4 pt-4">
+                <!-- زر الموافقة -->
+                <button id="yes-btn" class="z-20 px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-lg sm:text-xl rounded-2xl shadow-lg shadow-emerald-600/40 hover:scale-110 active:scale-95 transition-all duration-300">
+                    أكيد طبعاً ❤️
+                </button>
+
+                <!-- الزر الهارب -->
+                <button id="no-btn" class="z-20 px-6 py-3 bg-rose-950/80 border border-roseSoft/40 text-rose-200 font-semibold text-base rounded-2xl transition-all duration-200 select-none">
+                    لأ 🙄
+                </button>
+            </div>
+
+            <!-- رسالة التهنئة التي تظهر بعد الموافقة -->
+            <div id="celebration-message" class="hidden space-y-4 pt-4 animate-fade-in">
+                <div class="inline-block px-6 py-2 rounded-full bg-goldWarm/20 border border-goldWarm text-goldWarm font-bold text-lg">
+                    🎉 أحلى قرار في الدنيا كلها 🎉
+                </div>
+                <h4 class="font-amiri text-3xl sm:text-4xl font-bold text-roseSoft">
+                    ربنا يخليكي ليا يا أحلى عروسة في الدنيا! 💍❤️
+                </h4>
+                <p class="text-rose-100 text-base sm:text-lg max-w-md mx-auto leading-relaxed">
+                    من اللحظة دي وعد عليا أفرحك كل يوم.. واستعدي عشان قريب أوي هتبقي مراتي وحبيبتي رسمي!
+                </p>
+                <div class="pt-2">
+                    <button onclick="launchConfetti()" class="px-6 py-2.5 bg-roseDeep/80 hover:bg-roseDeep text-white text-sm font-semibold rounded-xl border border-roseSoft/40 transition-colors">
+                        احتفلي تاني بالقلوب والورد 🌹✨
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- تذييل الصفحة -->
+        <footer class="text-center text-rose-300/60 text-sm pb-6">
+            صُنع بكل حب الدنيا عشان خاطر عيون <span class="text-goldWarm font-bold">روضة</span> ❤️
+        </footer>
+    </main>
+
+    <!-- صندوق رسائل مخصص بدلاً من alert() -->
+    <div id="toast-box" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-all duration-300 transform translate-y-4">
+        <div id="toast-text" class="glass-card px-6 py-3 rounded-full text-goldWarm font-bold text-sm sm:text-base shadow-2xl border border-goldWarm/50 text-center whitespace-nowrap">
+        </div>
+    </div>
+
+    <script>
+        // ==================== إعداد المؤثرات الصوتية الناعمة باستخدام Tone.js ====================
+        let synth = null;
+        let isSoundEnabled = false;
+
+        function initAudio() {
+            if (!synth) {
+                synth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: "sine" },
+                    envelope: { attack: 0.1, decay: 0.3, sustain: 0.4, release: 1.5 }
+                }).toDestination();
+                synth.volume.value = -10;
+            }
+        }
+
+        function playRomanticChord() {
+            if (!isSoundEnabled || !synth) return;
+            try {
+                const now = Tone.now();
+                synth.triggerAttackRelease(["C4", "E4", "G4", "B4"], "2n", now);
+                synth.triggerAttackRelease(["D4", "F#4", "A4", "C#5"], "2n", now + 0.6);
+            } catch (e) { console.error(e); }
+        }
+
+        function playPopSound() {
+            if (!isSoundEnabled || !synth) return;
+            try {
+                synth.triggerAttackRelease("G5", "16n");
+            } catch (e) { console.error(e); }
+        }
+
+        const soundToggleBtn = document.getElementById('sound-toggle');
+        const soundIcon = document.getElementById('sound-icon');
+
+        soundToggleBtn.addEventListener('click', async () => {
+            await Tone.start();
+            initAudio();
+            isSoundEnabled = !isSoundEnabled;
+            soundIcon.textContent = isSoundEnabled ? '🎵' : '🔇';
+            if (isSoundEnabled) {
+                playRomanticChord();
+                showToast('تم تفعيل النغمات الرومانسية 🎶');
+            }
+        });
+
+        // ==================== دالة عرض الإشعارات اللطيفة ====================
+        let toastTimeout;
+        function showToast(message) {
+            const toastBox = document.getElementById('toast-box');
+            const toastText = document.getElementById('toast-text');
+            toastText.textContent = message;
+            toastBox.classList.remove('opacity-0', 'translate-y-4');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toastBox.classList.add('opacity-0', 'translate-y-4');
+            }, 2500);
+        }
+
+        // ==================== إنشاء النجوم والقلوب في الخلفية ====================
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            const starCount = window.innerWidth < 640 ? 45 : 85;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 3 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+                star.style.animationDelay = `${Math.random() * 3}s`;
+                container.appendChild(star);
+            }
+        }
+
+        function spawnFloatingHeart() {
+            const container = document.getElementById('hearts-container');
+            const heart = document.createElement('div');
+            const emojis = ['❤️', '💖', '🌹', '✨', '💕'];
+            heart.className = 'floating-heart';
+            heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            heart.style.left = `${Math.random() * 95}%`;
+            heart.style.fontSize = `${Math.random() * 16 + 14}px`;
+            const duration = Math.random() * 6 + 7;
+            heart.style.setProperty('--float-duration', `${duration}s`);
+            container.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, duration * 1000);
+        }
+
+        // ==================== الانتقال من الشاشة الترحيبية للرسالة ====================
+        const openLetterBtn = document.getElementById('open-letter-btn');
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const mainContent = document.getElementById('main-content');
+
+        openLetterBtn.addEventListener('click', async () => {
+            // محاولة تشغيل الصوت تلقائياً عند التفاعل الأول
+            try {
+                await Tone.start();
+                initAudio();
+                isSoundEnabled = true;
+                soundIcon.textContent = '🎵';
+                playRomanticChord();
+            } catch (e) {}
+
+            welcomeScreen.style.opacity = '0';
+            welcomeScreen.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                welcomeScreen.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                // تفعيل التلاشي التدريجي للمحتوى
+                requestAnimationFrame(() => {
+                    mainContent.classList.remove('opacity-0');
+                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 600);
+        });
+
+        // ==================== قلب البطاقات التفاعلية ====================
+        function flipCard(cardElement) {
+            cardElement.classList.toggle('flipped');
+            playPopSound();
+        }
+
+        // ==================== منطق الزر الهارب (لأ) ====================
+        const noBtn = document.getElementById('no-btn');
+        const yesBtn = document.getElementById('yes-btn');
+        const buttonsArea = document.getElementById('buttons-area');
+        const celebrationMsg = document.getElementById('celebration-message');
+
+        const funnyMessages = [
+            "مش بمزاجك يا روضة 😂❤️",
+            "الزرار ده بايظ، دوسي على التاني 😉",
+            "هتتجوزيني يعني هتتجوزيني 💍",
+            "حاولي تاني.. مفيش مفر مني 😘",
+            "قلبك بيقول أه، إيدك بتدوس غلط ليه؟ 😂"
+        ];
+        let escapeCount = 0;
+
+        function moveNoButton(e) {
+            if (e) e.preventDefault();
+            playPopSound();
+
+            const areaRect = buttonsArea.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+
+            // حساب حدود الحركة داخل الصندوق بأمان
+            const maxX = Math.max(20, areaRect.width - btnRect.width - 20);
+            const maxY = Math.max(20, areaRect.height - btnRect.height - 10);
+
+            const randomX = Math.floor(Math.random() * maxX) - (maxX / 2);
+            const randomY = Math.floor(Math.random() * maxY) - (maxY / 2);
+
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+            
+            // تكبير زر الموافقة تدريجياً لإغرائها بالضغط عليه
+            const currentScale = 1 + Math.min(escapeCount * 0.08, 0.45);
+            yesBtn.style.transform = `scale(${currentScale})`;
+
+            showToast(funnyMessages[escapeCount % funnyMessages.length]);
+            escapeCount++;
+        }
+
+        // دعم الماوس واللمس للهواتف
+        noBtn.addEventListener('mouseover', moveNoButton);
+        noBtn.addEventListener('touchstart', moveNoButton, { passive: false });
+        noBtn.addEventListener('click', moveNoButton);
+
+        // ==================== احتفال الموافقة (Canvas Particles) ====================
+        const canvas = document.getElementById('celebration-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationFrameId = null;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function launchConfetti() {
+            playRomanticChord();
+            const symbols = ['❤️', '💖', '🌹', '💍', '✨', '🌸'];
+            for (let i = 0; i < 75; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: -20 - Math.random() * 200,
+                    size: Math.random() * 20 + 16,
+                    speedY: Math.random() * 3 + 2,
+                    speedX: (Math.random() - 0.5) * 3,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: (Math.random() - 0.5) * 4,
+                    symbol: symbols[Math.floor(Math.random() * symbols.length)]
+                });
+            }
+            if (!animationFrameId) {
+                animateConfetti();
+            }
+        }
+
+        function animateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, index) => {
+                p.y += p.speedY;
+                p.x += p.speedX;
+                p.rotation += p.rotationSpeed;
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate((p.rotation * Math.PI) / 180);
+                ctx.font = `${p.size}px serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(p.symbol, 0, 0);
+                ctx.restore();
+
+                if (p.y > canvas.height + 50) {
+                    particles.splice(index, 1);
+                }
+            });
+
+            if (particles.length > 0) {
+                animationFrameId = requestAnimationFrame(animateConfetti);
+            } else {
+                animationFrameId = null;
+            }
+        }
+
+        yesBtn.addEventListener('click', () => {
+            buttonsArea.classList.add('hidden');
+            celebrationMsg.classList.remove('hidden');
+            launchConfetti();
+            // إطلاق دفعة ثانية بعد ثانية لمضاعفة البهجة
+            setTimeout(launchConfetti, 900);
+        });
+
+        // تشغيل النجوم والقلوب عند تحميل الصفحة
+        window.onload = function () {
+            createStars();
+            setInterval(spawnFloatingHeart, 1100);
+        };
+    </script>
+</body>
+</html>
